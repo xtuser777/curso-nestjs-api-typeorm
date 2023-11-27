@@ -21,11 +21,11 @@ import {
   FileInterceptor,
   FilesInterceptor,
 } from '@nestjs/platform-express';
-import { User } from 'src/decorators/user.decorator';
-import { join } from 'path';
-import { FileService } from 'src/file/file.service';
-import { AuthGuard } from 'src/guards/auth.guard';
-import { UserService } from 'src/user/user.service';
+import { UserService } from '../user/user.service';
+import { FileService } from '../file/file.service';
+import { AuthGuard } from '../guards/auth.guard';
+import { User } from '../decorators/user.decorator';
+import { User as UserEntity } from '../user/entity/user.entity';
 
 @Controller('auth')
 export class AuthController {
@@ -62,7 +62,7 @@ export class AuthController {
   @UseGuards(AuthGuard)
   @Post('photo')
   async uploadPhoto(
-    @User() user: any,
+    @User() user: UserEntity,
     @UploadedFile(
       new ParseFilePipe({
         validators: [
@@ -73,17 +73,10 @@ export class AuthController {
     )
     file: Express.Multer.File,
   ) {
-    const path = join(
-      __dirname,
-      '..',
-      '..',
-      'storage',
-      'photos',
-      `photo-${user.id}.png`,
-    );
+    const filename = `photo-${user.id}.png`;
 
     try {
-      await this.fileService.upload(file, path);
+      await this.fileService.upload(file, filename);
     } catch (e) {
       throw new BadRequestException(e);
     }

@@ -72,8 +72,8 @@ export class UserService {
 
   public async delete(id: number) {
     await this.exists(id);
-    await this.userRepository.delete(id);
-    return this.readOne(id);
+    const result = await this.userRepository.delete(id);
+    return result.affected > 0;
   }
 
   public async exists(id: number) {
