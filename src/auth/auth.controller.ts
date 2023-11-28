@@ -58,6 +58,12 @@ export class AuthController {
     return this.authService.reset(body);
   }
 
+  @UseGuards(AuthGuard)
+  @Post('me')
+  async me(@User() user: UserEntity) {
+    return user;
+  }
+
   @UseInterceptors(FileInterceptor('file'))
   @UseGuards(AuthGuard)
   @Post('photo')
